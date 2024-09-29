@@ -1,8 +1,10 @@
+import java.util.*;
 public class Arvore {
     Node root;
     int quantNodes = 0;
     int quantNaoFolhas = 0;
     int quantFolhas = 0;
+
     public Arvore(){
         root = null;
     }
@@ -11,11 +13,69 @@ public class Arvore {
         root = inserirNovo(node, root);
     }
 
+    public void emOrdem(Node node) {
+        if (node == null)
+            return;
+
+        Stack<Node> pilha = new Stack<>(); 
+        Node aux = node;
+
+        while (aux != null || !pilha.isEmpty()){
+
+            while(aux != null){
+                pilha.push(aux);
+                aux = aux.esquerda;
+            }
+            aux = pilha.pop();
+            System.out.print(aux.valor + " ");
+
+            aux = aux.direita;
+        }
+    }
+
     public void preOrdem(Node node) {
-        if(node != null){
-            System.out.println(node.valor+"\n");//raiz
-            preOrdem(node.esquerda);//esquerda
-            preOrdem(node.direita);//direita
+        if (node == null)
+            return;
+
+        Stack<Node> pilha = new Stack<>(); 
+        Node aux = node;
+
+        while (aux != null || !pilha.isEmpty()){
+
+            while(aux != null){
+                pilha.push(aux);
+                System.out.print(aux.valor + " ");
+                aux = aux.esquerda;
+            }
+            aux = pilha.pop();
+            aux = aux.direita;
+        }
+    }
+
+    public void posOrdem(Node node) {
+        if (node == null) {
+            return;
+        }
+
+        Stack<Node> pilha1 = new Stack<>();
+        Stack<Node> pilha2 = new Stack<>();
+
+        pilha1.push(node);
+
+        while (!pilha1.isEmpty()) {
+            Node aux = pilha1.pop();
+            pilha2.push(aux);
+            if (aux.esquerda != null) 
+                pilha1.push(aux.esquerda);
+            
+
+            if (aux.direita != null) 
+                pilha1.push(aux.direita);
+        }
+
+        while (!pilha2.isEmpty()) {
+            Node aux = pilha2.pop();
+            System.out.print(aux.valor + " ");
         }
     }
 
@@ -32,90 +92,106 @@ public class Arvore {
         return current;
     }
 
-    public Node encontrarElemento(Node atual, int valor) {
-        if(atual == null) 
-            return null;
+    public Node encontrarElemento(Node current, int value){
+        if(current == null) return null; 
+        if(value > current.getValue()){
+             if(current.getRight() != null){
+                  if(current.getRight().getValue() == value){
+                       return current;
+                  }
+             }
+        }
+        else{
+             if(current.getLeft() != null){
+                  if(current.getLeft().getValue() == value){
+                       return current;
+                  }
+             }
+        }
+        if(current.getValue() > value){
+             return encontrarElemento(current.getLeft(),value);
+        }
+        if(current.getValue() < value){
+             return encontrarElemento(current.getRight(), value);
+        }
+        return null;
+   }
 
-        if(atual.valor < valor)
-            if(atual.direita != null)
-                if(atual.direita.valor == valor)
-                    return atual;
-        
-        else 
-            if(atual.esquerda != null)
-                if(atual.esquerda.valor == valor)
-                    return atual;
 
-        if(atual.valor > valor)
-            return encontrarElemento(atual.direita, valor);
-        else
-            return encontrarElemento(atual.direita, valor);
-    }
-
-
-    public boolean remover (int valor) {
-        if (root == null)
-            return false;
-        
-        else {
-            Node nox; // celula q guarda o valor que estou buscanod
-            Node pai; // celula q guarda o pai do nox
-
-            if(root.valor == valor){
-                pai = root;
-                nox = root;
-            } else {
-                pai = encontrarElemento(root,valor);
-
-                if(pai.valor < valor) //encontra o Node que tem o valor buscado e atribui ele a nox
-                    nox = pai.direita;
-                else
-                    nox = pai.esquerda;
+    public boolean remover(int value) {
+        if (root == null) {
+            return false; // A árvore está vazia
+        }
+    
+        // Caso em que a raiz é o nó a ser removido
+        if (root.getValue() == value) {
+            // Se a raiz não tem filhos, simplesmente a remove
+            if (root.getLeft() == null && root.getRight() == null) {
+                root = null;
+            } else if (root.getLeft() == null) { // Se não tem filho esquerdo
+                root = root.getRight();
+            } else if (root.getRight() == null) { // Se não tem filho direito
+                root = root.getLeft();
+            } else { // Caso com dois filhos
+                Node noDadRightLeft = farLeft(root,root.getRight());
+                Node substite = noDadRightLeft.getRight();
+                substite.setLeft(root.getLeft());
+                noDadRightLeft.setLeft(null);
+                root = substite; // Substitui a raiz pela substituta
             }
-            if(nox.direita == null && nox.esquerda == null){ /*caso 1*/
-
-                  if(pai.valor < valor)
-                    pai.direita = null;
-                else 
-                    pai.esquerda = null;
-            } else { /*caso 3*/
-
-                  if(nox.direita != null && nox.esquerda != null){
-
-                    Node paiFarLeft = farLeft(nox, nox.direita);
-                    Node replacer = paiFarLeft.esquerda; 
-
-                    paiFarLeft.esquerda = null;
-
-                    replacer.direita = nox.direita;
-                    replacer.esquerda = nox.esquerda;
-
-                    nox.esquerda = null;
-                    nox.direita = null;
-
-                    if(pai.valor < valor)
-                        pai.direita = replacer;
-                    else
-                        pai.esquerda = replacer;
-
-                } else { /*caso 2*/
-                      if(nox.direita == null)
-                        if(pai.valor < nox.valor)
-                            pai.direita = nox.esquerda;
-                        else
-                            pai.esquerda = nox.esquerda;
-                        nox.esquerda = null;
-
-                    if(nox.esquerda == null)
-                        if(pai.valor > nox.valor)
-                            pai.esquerda = nox.direita;
-                        else
-                            pai.direita = nox.direita;
-                        nox.direita = null;
-                }
+            return true; // A raiz foi removida
+        }
+    
+        // Para outros casos, procure o pai do nó a ser removido
+        Node dad = encontrarElemento(root, value);
+        if (dad == null) {
+            return false; // O valor não foi encontrado
+        }
+    
+        Node noX = (dad.getValue() < value) ? dad.getRight() : dad.getLeft();
+    
+        // Caso 1: nó sem filhos
+        if (noX.getRight() == null && noX.getLeft() == null) {
+            if (dad.getValue() < value) {
+                dad.setRight(null);
+            } else {
+                dad.setLeft(null);
+            }
+            return true;
+        }
+    
+        // Caso 2: um filho
+        if (noX.getRight() == null) {
+            if (dad.getValue() < value) {
+                dad.setRight(noX.getLeft());
+            } else {
+                dad.setLeft(noX.getLeft());
+            }
+        } else if (noX.getLeft() == null) {
+            if (dad.getValue() < value) {
+                dad.setRight(noX.getRight());
+            } else {
+                dad.setLeft(noX.getRight());
             }
         }
-        return false;
+    
+        // Caso 3: dois filhos
+        if (noX.getRight() != null && noX.getLeft() != null) {
+            Node noDadRightLeft = farLeft(noX,noX.getRight());
+            Node substite = noDadRightLeft.getLeft();
+            noDadRightLeft.setLeft(substite.getRight());
+            substite.setRight(noX.getRight());
+            substite.setLeft(noX.getLeft());
+            noX.setRight(null);
+            noX.setLeft(null);
+            if (dad.getValue() < value){
+                dad.setRight(substite);
+            }
+            else{
+                dad.setLeft(substite);
+            }
+        }
+        return true;
     }
 
     private Node farLeft (Node pai, Node filho){
@@ -176,21 +252,24 @@ public class Arvore {
 
     //questao 4
     public int altura(Node root) {
-        if (root == null)
+        if(this.root == null)
             return 0;
-        return 1 + Math.max(altura(root.esquerda), altura(root.direita));
+            
+        if (root == null)
+            return -1;
+
+        return Math.max(altura(root.esquerda),altura(root.direita)) + 1;
     }
 
     //questao 5
     public void removerPares(Node root){
-        if(root == null)
-            return;
-        
-        if(root.valor % 2 == 0)
-            remover(root.valor);
-        else{
-            return;
-        }
+        if(root != null){
+            removerPares(root.esquerda);
+            removerPares(root.direita);
+            if(root.valor % 2 == 0){
+                remover(root.valor);
+            }
+        } 
     }
     //questao 6
     public void espelhar(Node root){
