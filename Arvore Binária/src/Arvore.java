@@ -1,4 +1,3 @@
-import java.util.*;
 public class Arvore {
     Node root;
     int quantNodes = 0;
@@ -17,16 +16,16 @@ public class Arvore {
         if (node == null)
             return;
 
-        Stack<Node> pilha = new Stack<>(); 
+        Pilha pilha = new Pilha();
         Node aux = node;
 
-        while (aux != null || !pilha.isEmpty()){
+        while (aux != null || !pilha.vazia()){
 
             while(aux != null){
-                pilha.push(aux);
+                pilha.empilhar(aux);
                 aux = aux.esquerda;
             }
-            aux = pilha.pop();
+            aux = pilha.desempilhar();
             System.out.print(aux.valor + " ");
 
             aux = aux.direita;
@@ -37,17 +36,17 @@ public class Arvore {
         if (node == null)
             return;
 
-        Stack<Node> pilha = new Stack<>(); 
+        Pilha pilha = new Pilha(); 
         Node aux = node;
 
-        while (aux != null || !pilha.isEmpty()){
+        while (aux != null || !pilha.vazia()){
 
             while(aux != null){
-                pilha.push(aux);
+                pilha.empilhar(aux);
                 System.out.print(aux.valor + " ");
                 aux = aux.esquerda;
             }
-            aux = pilha.pop();
+            aux = pilha.desempilhar();
             aux = aux.direita;
         }
     }
@@ -57,24 +56,24 @@ public class Arvore {
             return;
         }
 
-        Stack<Node> pilha1 = new Stack<>();
-        Stack<Node> pilha2 = new Stack<>();
+        Pilha pilha1 = new Pilha();
+        Pilha pilha2 = new Pilha();
 
-        pilha1.push(node);
+        pilha1.empilhar(node);
 
-        while (!pilha1.isEmpty()) {
-            Node aux = pilha1.pop();
-            pilha2.push(aux);
+        while (!pilha1.vazia()) {
+            Node aux = pilha1.desempilhar();
+            pilha2.empilhar(aux);
             if (aux.esquerda != null) 
-                pilha1.push(aux.esquerda);
+                pilha1.empilhar(aux.esquerda);
             
 
             if (aux.direita != null) 
-                pilha1.push(aux.direita);
+                pilha1.empilhar(aux.direita);
         }
 
-        while (!pilha2.isEmpty()) {
-            Node aux = pilha2.pop();
+        while (!pilha2.vazia()) {
+            Node aux = pilha2.desempilhar();
             System.out.print(aux.valor + " ");
         }
     }
