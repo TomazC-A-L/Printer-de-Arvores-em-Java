@@ -92,104 +92,100 @@ public class Arvore {
     }
 
     public Node encontrarElemento(Node current, int value){
-        if(current == null) return null; 
-        if(value > current.getValue()){
-             if(current.getRight() != null){
-                  if(current.getRight().getValue() == value){
+        if(current == null) 
+            return null; 
+
+        if(value > current.valor)
+             if(current.direita != null)
+                  if(current.direita.valor == value)
                        return current;
-                  }
-             }
-        }
-        else{
-             if(current.getLeft() != null){
-                  if(current.getLeft().getValue() == value){
+                  
+        else
+             if(current.esquerda != null)
+                  if(current.esquerda.valor == value)
                        return current;
-                  }
-             }
-        }
-        if(current.getValue() > value){
-             return encontrarElemento(current.getLeft(),value);
-        }
-        if(current.getValue() < value){
-             return encontrarElemento(current.getRight(), value);
-        }
+        
+        if(current.valor > value)
+             return encontrarElemento(current.esquerda,value);
+        
+        if(current.valor < value)
+             return encontrarElemento(current.direita, value);
+        
         return null;
-   }
+    }
 
 
     public boolean remover(int value) {
-        if (root == null) {
-            return false; // A árvore está vazia
-        }
+        if (root == null) 
+            return false;
+        
     
-        // Caso em que a raiz é o nó a ser removido
-        if (root.getValue() == value) {
-            // Se a raiz não tem filhos, simplesmente a remove
-            if (root.getLeft() == null && root.getRight() == null) {
+        if (root.valor == value) {
+            
+            if (root.esquerda == null && root.direita == null)
                 root = null;
-            } else if (root.getLeft() == null) { // Se não tem filho esquerdo
-                root = root.getRight();
-            } else if (root.getRight() == null) { // Se não tem filho direito
-                root = root.getLeft();
-            } else { // Caso com dois filhos
-                Node noDadRightLeft = farLeft(root,root.getRight());
-                Node substite = noDadRightLeft.getRight();
-                substite.setLeft(root.getLeft());
-                noDadRightLeft.setLeft(null);
-                root = substite; // Substitui a raiz pela substituta
+            else if (root.esquerda == null) 
+                root = root.direita;
+            else if (root.direita == null)
+                root = root.esquerda;
+            else { 
+                Node noPaiDireitaEsquerda = farLeft(root,root.direita);
+                Node substituto = noPaiDireitaEsquerda.esquerda;
+                noPaiDireitaEsquerda.esquerda = substituto.direita;
+                substituto.esquerda = root.esquerda;
+                substituto.direita = root.direita;
+                root = substituto; // Substitui a raiz pela substituta
             }
             return true; // A raiz foi removida
         }
     
         // Para outros casos, procure o pai do nó a ser removido
         Node dad = encontrarElemento(root, value);
-        if (dad == null) {
+        if (dad == null) 
             return false; // O valor não foi encontrado
-        }
+        
     
-        Node noX = (dad.getValue() < value) ? dad.getRight() : dad.getLeft();
+        Node noX = (dad.valor < value) ? dad.direita : dad.esquerda;
     
         // Caso 1: nó sem filhos
-        if (noX.getRight() == null && noX.getLeft() == null) {
-            if (dad.getValue() < value) {
-                dad.setRight(null);
-            } else {
-                dad.setLeft(null);
-            }
+        if (noX.direita == null && noX.esquerda == null) {
+            if (dad.valor < value) 
+                dad.direita = null;
+            else
+                dad.esquerda = null;
+            
             return true;
         }
     
         // Caso 2: um filho
-        if (noX.getRight() == null) {
-            if (dad.getValue() < value) {
-                dad.setRight(noX.getLeft());
-            } else {
-                dad.setLeft(noX.getLeft());
-            }
-        } else if (noX.getLeft() == null) {
-            if (dad.getValue() < value) {
-                dad.setRight(noX.getRight());
-            } else {
-                dad.setLeft(noX.getRight());
-            }
-        }
+        if (noX.direita == null)
+            if (dad.valor < value)
+                dad.direita = noX.esquerda;
+            else
+                dad.esquerda = noX.esquerda;
+
+        else if (noX.esquerda == null) 
+            if (dad.valor < value) 
+                dad.direita = noX.direita;
+            else
+                dad.esquerda = noX.direita;
     
         // Caso 3: dois filhos
-        if (noX.getRight() != null && noX.getLeft() != null) {
-            Node noDadRightLeft = farLeft(noX,noX.getRight());
-            Node substite = noDadRightLeft.getLeft();
-            noDadRightLeft.setLeft(substite.getRight());
-            substite.setRight(noX.getRight());
-            substite.setLeft(noX.getLeft());
-            noX.setRight(null);
-            noX.setLeft(null);
-            if (dad.getValue() < value){
-                dad.setRight(substite);
-            }
-            else{
-                dad.setLeft(substite);
-            }
+        if (noX.direita != null && noX.esquerda != null) {
+            Node noPaiDireitaEsquerda = farLeft(noX,noX.direita);
+            Node substituto = noPaiDireitaEsquerda.esquerda;
+            noPaiDireitaEsquerda.esquerda = substituto.direita;
+            substituto.direita = noX.direita;
+            substituto.esquerda = noX.esquerda;
+            noX.direita = null;
+            noX.esquerda = null;
+
+            if (dad.valor < value)
+                dad.direita = substituto;
+            else
+                dad.esquerda = substituto;
         }
+    
         return true;
     }
 
@@ -228,13 +224,13 @@ public class Arvore {
 
     //questao 2
     public int contarNaoFolhas(Node root){
-        if(root != null){
+        if(root != null)
             if(root.direita != null || root.esquerda != null){
                 quantNaoFolhas++;
                 contarNaoFolhas(root.esquerda);
                 contarNaoFolhas(root.direita);
             }
-        }
+
         return quantNaoFolhas;
     }
 

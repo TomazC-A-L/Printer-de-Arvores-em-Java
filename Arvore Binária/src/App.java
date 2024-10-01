@@ -20,7 +20,8 @@ public class App {
         System.out.println("Nodes nao folhas: "+arvore.contarNaoFolhas(arvore.root));
         System.out.println("Nodes folhas: "+arvore.contarFolhas(arvore.root));
         System.out.println("Altura: "+arvore.altura(arvore.root));
-        System.out.print("Ordem: ");
-        arvore.posOrdem(arvore.root);
+        //System.out.print("Ordem: ");
+        arvore.remover(16);
+        Arte.printTree(arvore.root);
     }
 }
